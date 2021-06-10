@@ -2,7 +2,8 @@
   "name": "app",
   "description": "demo-app",
   "dependencies": {
-    "@lightningjs/sdk": "^4.3.3"
+    "@lightningjs/sdk": "^4.3.3",
+    "lodash": "^4.17.21"
   },
   "lint-staged": {
     "*.js": [

@@ -28,11 +28,11 @@ export default class MenuItem extends Lightning.Component {
   }
 
   _focus() {
-    console.log(`focus:${this.label}`)
+    this.signal('itemFocussed', this.val, this.text.text)
   }
 
   _unfocus() {
-    console.log(`unfocus:${this.label}`)
+    this.signal('itemUnfocussed', this.val, this.text.text)
   }
 
   _handleUp() {
@@ -41,6 +41,10 @@ export default class MenuItem extends Lightning.Component {
 
   _handleDown() {
     this.signal("nextItem");
+  }
+
+  _handleLeft() {
+    this.signal("leftSelect", this.val, this.text.text);
   }
 
   _handleRight() {
