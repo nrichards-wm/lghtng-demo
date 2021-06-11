@@ -1,15 +1,18 @@
 import { Lightning } from "@lightningjs/sdk";
 import isEqual from 'lodash/isEqual'
 
-import MenuItem, { MENU_ITEM_HEIGHT, MENU_ITEM_WIDTH, MENU_ITEM_TEXT_COLOR } from "./MenuItem";
+import {
+  MENU_ITEM_HEIGHT,
+  MENU_ITEM_WIDTH,
+  MENU_ITEM_TEXT_COLOR,
+  SELECTED_BG_OFFSET,
+  MENU_GUTTER,
+  MENU_WIDTH,
+} from './constants'
+import MenuItem from "./MenuItem";
 
-const FOCUS_ARROW_WIDTH = 50;
 const FOCUS_BG_COLOR = 0xfff20587;
 const TOUCHED_BG_COLOR = 0xff04b2d9;
-const SELECTED_BG_OFFSET = -8;
-
-export const MENU_GUTTER = 40;
-export const MENU_WIDTH = MENU_ITEM_WIDTH + MENU_GUTTER + FOCUS_ARROW_WIDTH
 
 export default class Menu extends Lightning.Component {
   static _template() {
@@ -19,7 +22,7 @@ export default class Menu extends Lightning.Component {
         color: TOUCHED_BG_COLOR,
         w: MENU_WIDTH,
         h: MENU_ITEM_HEIGHT,
-        y: SELECTED_BG_OFFSET,
+        y: -SELECTED_BG_OFFSET,
         visible: false,
       },
       FocusBackground: {
@@ -27,17 +30,17 @@ export default class Menu extends Lightning.Component {
         color: FOCUS_BG_COLOR,
         w: MENU_WIDTH,
         h: MENU_ITEM_HEIGHT,
-        y: SELECTED_BG_OFFSET,
+        y: -SELECTED_BG_OFFSET,
         visible: false,
+      },
+      Items: {
+        x: MENU_GUTTER
       },
       FocusArrow: {
         x: MENU_ITEM_WIDTH + MENU_GUTTER,
         visible: false,
         text: { text: ">", fontFace: "Regular", fontSize: 50, color: MENU_ITEM_TEXT_COLOR }
       },
-      Items: {
-        x: MENU_GUTTER
-      }
     };
   }
 

@@ -1,6 +1,6 @@
 import { Lightning } from "@lightningjs/sdk"
 
-import Menu, {MENU_GUTTER, MENU_WIDTH} from "./sidemenu/Menu"
+import Menu, { MENU_GUTTER, MENU_WIDTH } from "./Menu"
 import { generateItems } from './utils'
 
 export default class Page extends Lightning.Component {
