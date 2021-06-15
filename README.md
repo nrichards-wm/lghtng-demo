@@ -1,4 +1,6 @@
-# demo-app
+# Nathans Lightning Demo
+
+Build a menu, submenu. and carousel as a sample and to learn the Lightning framework
 
 ## app
 
