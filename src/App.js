@@ -1,31 +1,30 @@
-import { Lightning, Utils } from "@lightningjs/sdk";
-import Page from "./Page";
+import { Lightning, Utils } from '@lightningjs/sdk'
+import { APP_HEIGHT, APP_WIDTH } from './constants'
+import Page from './Page'
 
 export default class App extends Lightning.Component {
   static getFonts() {
-    return [
-      { family: "Regular", url: Utils.asset("fonts/Roboto-Regular.ttf") }
-    ];
+    return [{ family: 'Regular', url: Utils.asset('fonts/Roboto-Regular.ttf') }]
   }
 
   static _template() {
     return {
       Background: {
         rect: true,
-        w: 1920,
-        h: 1080,
-        color: 0xff000000
+        w: APP_WIDTH,
+        h: APP_HEIGHT,
+        color: 0xff000000,
       },
       MainPage: {
         type: Page,
-        x: 5
-      }
-    };
+        x: 5,
+      },
+    }
   }
 
   _init() {}
 
   _getFocused() {
-    return this.tag("MainPage");
+    return this.tag('MainPage')
   }
 }
