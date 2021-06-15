@@ -21,8 +21,6 @@ export default class CarouselItem extends Lightning.Component {
 
   _init() {
     this.tag('Image').on('txLoaded', () => {
-      console.log('texture loaded: ' + this.tag('Image').src)
-      console.log(this.tag('Image').texture)
       this.tag('Image').setSmooth('alpha', 1)
     })
 
@@ -36,29 +34,25 @@ export default class CarouselItem extends Lightning.Component {
     this.tag('Image').src = s
   }
 
-  onError() {
-    // TODO
-  }
-
-  onSuccess() {
-    // TODO
-  }
-
   _focus() {
     this.tag('Image').patch({
-      w: EXPANDED_IMAGE_WIDTH,
-      h: EXPANDED_IMAGE_HEIGHT,
-      x: -(EXPANDED_IMAGE_WIDTH - IMAGE_WIDTH) / 2,
-      y: -(EXPANDED_IMAGE_HEIGHT - IMAGE_HEIGHT) / 2,
+      smooth: {
+        w: EXPANDED_IMAGE_WIDTH,
+        h: EXPANDED_IMAGE_HEIGHT,
+        x: -(EXPANDED_IMAGE_WIDTH - IMAGE_WIDTH) / 2,
+        y: -(EXPANDED_IMAGE_HEIGHT - IMAGE_HEIGHT) / 2,
+      },
     })
   }
 
   _unfocus() {
     this.tag('Image').patch({
-      w: IMAGE_WIDTH,
-      h: IMAGE_HEIGHT,
-      x: 0,
-      y: 0,
+      smooth: {
+        w: IMAGE_WIDTH,
+        h: IMAGE_HEIGHT,
+        x: 0,
+        y: 0,
+      }
     })
   }
 
