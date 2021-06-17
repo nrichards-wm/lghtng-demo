@@ -2,6 +2,8 @@
 
 Build a menu, submenu. and carousel as a sample and to learn the Lightning framework
 
+![screen-shot-demo](https://user-images.githubusercontent.com/85558738/122427313-4d5bc700-cf91-11eb-9570-72de1855d684.gif)
+
 ## app
 
 ### Getting started
