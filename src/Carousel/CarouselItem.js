@@ -2,26 +2,63 @@ import { Lightning } from '@lightningjs/sdk'
 
 import { IMAGE_WIDTH, IMAGE_HEIGHT, EXPANDED_IMAGE_WIDTH, EXPANDED_IMAGE_HEIGHT } from './constants'
 
+const ImageStatus = {
+  LOADED: 'LOADED',
+  LOADING: 'LOADING',
+}
+const ImageStatusAlpha = {
+  [ImageStatus.LOADING]: 0.05,
+  [ImageStatus.LOADED]: 1
+}
+
+const FocusTranistions = {
+  focused: {
+    w: EXPANDED_IMAGE_WIDTH,
+    h: EXPANDED_IMAGE_HEIGHT,
+    x: -(EXPANDED_IMAGE_WIDTH - IMAGE_WIDTH) / 2,
+    y: -(EXPANDED_IMAGE_HEIGHT - IMAGE_HEIGHT) / 2,
+  },
+  unfocused: {
+    w: IMAGE_WIDTH,
+    h: IMAGE_HEIGHT,
+    x: 0,
+    y: 0,
+  }
+}
+
 export default class CarouselItem extends Lightning.Component {
+  static $imageSrc = CarouselItem.bindProp('_src', ({ _src }) => _src)
+  static $imageAlpha = CarouselItem.bindProp('_loaded', ({ _loaded }) => ImageStatusAlpha[_loaded])
+  static $focusTransition = CarouselItem.bindProp('_isFocused', ({ _isFocused }) =>
+    _isFocused ? FocusTranistions.focused : FocusTranistions.unfocused
+  )
+
   static _template() {
     return {
       Background: {
+        ...FocusTranistions.unfocused,
+        smooth: this.$focusTransition,
         rect: true,
-        w: IMAGE_WIDTH,
-        h: IMAGE_HEIGHT,
         color: 0xff333333,
       },
       Image: {
-        w: IMAGE_WIDTH,
-        h: IMAGE_HEIGHT,
-        alpha: 0.5,
+        ...FocusTranistions.unfocused,
+        alpha: this.$imageAlpha,
+        smooth: this.$focusTransition,
+        src: this.$imageSrc,
       },
     }
   }
 
+  _constructor() {
+    this._src = undefined
+  }
+
   _init() {
+    this._loaded = ImageStatus.LOADING
+
     this.tag('Image').on('txLoaded', () => {
-      this.tag('Image').setSmooth('alpha', 1)
+      this._loaded = ImageStatus.LOADED
     })
 
     this.tag('Image').on('txError', () => {
@@ -31,29 +68,14 @@ export default class CarouselItem extends Lightning.Component {
 
   set imgSrc(s) {
     this._src = s
-    this.tag('Image').src = s
   }
 
   _focus() {
-    this.tag('Image').patch({
-      smooth: {
-        w: EXPANDED_IMAGE_WIDTH,
-        h: EXPANDED_IMAGE_HEIGHT,
-        x: -(EXPANDED_IMAGE_WIDTH - IMAGE_WIDTH) / 2,
-        y: -(EXPANDED_IMAGE_HEIGHT - IMAGE_HEIGHT) / 2,
-      },
-    })
+    this._isFocused = true
   }
 
   _unfocus() {
-    this.tag('Image').patch({
-      smooth: {
-        w: IMAGE_WIDTH,
-        h: IMAGE_HEIGHT,
-        x: 0,
-        y: 0,
-      }
-    })
+    this._isFocused = false
   }
 
   _handleLeft() {

@@ -4,13 +4,28 @@ import CarouselItem from './CarouselItem'
 import { IMAGE_WIDTH, IMAGE_MARGIN } from './constants'
 
 export default class Carousel extends Lightning.Component {
+  static $itemsX = Carousel.bindProp('_itemsX');
+  static $itemsXSmooth = Carousel.bindProp('_itemsXSmooth', ({_itemsXSmooth}) => ({ x: _itemsXSmooth }))
+  static $itemsAlpha = Carousel.bindProp('_isFocussed', ({ _isFocussed }) => _isFocussed ? 1 : 0.5 );
+
   static _template() {
     return {
       Items: {
-        x: IMAGE_MARGIN,
-        alpha: 0.5,
+        x: this.$itemsX,
+        smooth: this.$itemsXSmooth,
+        alpha: this.$itemsAlpha,
       },
     }
+  }
+
+  _constructor() {
+    this._itemsX = IMAGE_MARGIN
+    this._itemsXSmooth = undefined
+  }
+
+  _init() {
+    this._selectedIndex = 0
+    this._isFocussed = false
   }
 
   get items() {
@@ -33,17 +48,12 @@ export default class Carousel extends Lightning.Component {
   }
 
   _resetItems() {
-    this.tag('Items').patch({ x: 0 })
-    this._selectedIndex = 0
-  }
-
-  _init() {
+    this._itemsX = 0;
     this._selectedIndex = 0
   }
 
   _setIndex(i) {
-    this.tag('Items').setSmooth('x', -(i * (IMAGE_WIDTH + IMAGE_MARGIN)) + 2 * IMAGE_MARGIN)
-
+    this._itemsXSmooth = -(i * (IMAGE_WIDTH + IMAGE_MARGIN)) + 2 * IMAGE_MARGIN
     this._selectedIndex = i
   }
 
@@ -62,11 +72,11 @@ export default class Carousel extends Lightning.Component {
   }
 
   _focus() {
-    this.tag('Items').patch({ alpha: 1 })
+    this._isFocussed = true
   }
 
   _unfocus() {
-    this.tag('Items').patch({ alpha: 0.5 })
+    this._isFocussed = false
   }
 
   _getFocused() {

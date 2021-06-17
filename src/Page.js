@@ -5,14 +5,31 @@ import Carousel from './Carousel'
 import Menu, { MENU_GUTTER, MENU_WIDTH } from './Menu'
 import { generateItems, generateImages } from './utils'
 
+const slidePaneTransition = {
+  focused: {
+    x: 0,
+  },
+  unfocused: {
+    x: -MENU_WIDTH + MENU_GUTTER,
+  },
+}
+
 export default class Page extends Lightning.Component {
+  static $subMenuItems = Page.bindProp('_subMenuItems')
+  static $carouselItems = Page.bindProp('_carouselItems')
+  static $slidePaneSmooth = Page.bindProp('_sideMenuActive', ({ _sideMenuActive }) =>
+    _sideMenuActive ? slidePaneTransition.focused : slidePaneTransition.unfocused
+  )
+
   static _template() {
     return {
       SlidePane: {
+        smooth: this.$slidePaneSmooth,
         Carousel: {
           type: Carousel,
           y: 250,
           x: MENU_WIDTH * 2,
+          items: this.$carouselItems,
           signals: {
             deselect: '_deselectCarousel',
           },
@@ -27,7 +44,7 @@ export default class Page extends Lightning.Component {
           type: Menu,
           y: 250,
           x: MENU_WIDTH,
-          visible: false,
+          items: this.$subMenuItems,
           signals: {
             leftSelect: '_subItemLeftSelected',
             rightSelect: '_subItemRightSelected',
@@ -56,6 +73,12 @@ export default class Page extends Lightning.Component {
     }
   }
 
+  _constructor() {
+    this._subMenuItems = []
+    this._carouselItems = []
+    this._sideMenuActive = false
+  }
+
   _init() {
     this._setState('SideMenu')
   }
@@ -63,12 +86,6 @@ export default class Page extends Lightning.Component {
   static _states() {
     return [
       class SideMenu extends this {
-        $enter() {
-          this.tag('SlidePane').setSmooth('x', 0)
-        }
-        $exit() {
-          this.tag('SlidePane').setSmooth('x', -MENU_WIDTH + MENU_GUTTER)
-        }
         _getFocused() {
           return this.tag('SideMenu')
         }
@@ -95,11 +112,14 @@ export default class Page extends Lightning.Component {
   }
 
   _sideItemFocussed(value) {
-    this.tag('SubMenu').patch({
-      items: value,
-      visible: true,
-    })
+    this._subMenuItems = value
+    this._sideMenuActive = true;
   }
+
+  _sideItemUnfocussed() {
+    this._sideMenuActive = false;
+  }
+
 
   _subItemLeftSelected() {
     this._setState('SideMenu')
@@ -114,10 +134,7 @@ export default class Page extends Lightning.Component {
   }
 
   _subItemFocussed(value) {
-    console.log('_subItemFocussed', value)
-    this.tag('Carousel').patch({
-      items: generateImages(value),
-    })
+    this._carouselItems = generateImages(value)
   }
 
   _deselectCarousel() {

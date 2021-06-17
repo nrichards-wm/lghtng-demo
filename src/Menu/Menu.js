@@ -15,6 +15,11 @@ const FOCUS_BG_COLOR = 0xfff20587
 const TOUCHED_BG_COLOR = 0xff04b2d9
 
 export default class Menu extends Lightning.Component {
+  static $itemsY = Menu.bindProp('_itemsY');
+  static $itemsYSmooth = Menu.bindProp('_itemsYSmooth', ({_itemsYSmooth}) => ({y: _itemsYSmooth}))
+  static $isItemFocussed = Menu.bindProp('_isItemFocussed');
+  static $touchedVisible = Menu.bindProp('_touchedVisible');
+
   static _template() {
     return {
       TouchedBackground: {
@@ -23,7 +28,7 @@ export default class Menu extends Lightning.Component {
         w: MENU_WIDTH,
         h: MENU_ITEM_HEIGHT,
         y: -SELECTED_BG_OFFSET,
-        visible: false,
+        visible: this.$touchedVisible,
       },
       FocusBackground: {
         rect: true,
@@ -31,14 +36,16 @@ export default class Menu extends Lightning.Component {
         w: MENU_WIDTH,
         h: MENU_ITEM_HEIGHT,
         y: -SELECTED_BG_OFFSET,
-        visible: false,
+        visible: this.$isItemFocussed,
       },
       Items: {
         x: MENU_GUTTER,
+        y: this.$itemsY,
+        smooth: this.$itemsYSmooth
       },
       FocusArrow: {
         x: MENU_ITEM_WIDTH + MENU_GUTTER,
-        visible: false,
+        visible: this.$isItemFocussed,
         text: { text: '>', fontFace: 'Regular', fontSize: 50, color: MENU_ITEM_TEXT_COLOR },
       },
     }
@@ -46,6 +53,10 @@ export default class Menu extends Lightning.Component {
 
   _init() {
     this._selectedIndex = 0
+    this._itemsY = 0
+    this._itemsYSmooth = 0
+    this._isItemFocussed = false
+    this._touchedVisible = false
   }
 
   set showTouched(showTouched) {
@@ -83,13 +94,13 @@ export default class Menu extends Lightning.Component {
   }
 
   _resetItems() {
-    this.tag('Items').patch({ y: 0 })
-    this.tag('TouchedBackground').patch({ visible: false })
+    this._itemsY = 0
+    this._touchedVisible = false
     this._selectedIndex = 0
   }
 
   _setIndex(i) {
-    this.tag('Items').setSmooth('y', i * -90)
+    this._itemsYSmooth = i * -90
     this._selectedIndex = i
   }
 
@@ -109,14 +120,12 @@ export default class Menu extends Lightning.Component {
 
   _itemFocussed(value, label) {
     this.signal('itemFocussed', value, label)
-    this.tag('FocusArrow').patch({ visible: true })
-    this.tag('FocusBackground').patch({ visible: true })
-    if (this._showTouched) this.tag('TouchedBackground').patch({ visible: true })
+    this._isItemFocussed = true
+    if (this._showTouched) this._touchedVisible = true
   }
 
   _itemUnfocussed(value, label) {
     this.signal('itemUnfocussed', value, label)
-    this.tag('FocusArrow').patch({ visible: false })
-    this.tag('FocusBackground').patch({ visible: false })
+    this._isItemFocussed = false
   }
 }

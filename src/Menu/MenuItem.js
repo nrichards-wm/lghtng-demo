@@ -8,11 +8,21 @@ import {
 } from './constants'
 
 export default class MenuItem extends Lightning.Component {
+  static $label = MenuItem.bindProp('label')
+  static $showSlideLine = MenuItem.bindProp('_showSlideLine', (menuItem) => {
+    const { _showSlideLine } = menuItem
+
+    if (_showSlideLine) menuItem._slideLineAnimation.start()
+    else menuItem._slideLineAnimation.stop()
+
+    return _showSlideLine
+  })
+
   static _template() {
     return {
       SlideLine: {
         rect: true,
-        visible: false,
+        visible: this.$showSlideLine,
         w: 0,
         h: SELECTED_BG_OFFSET,
         x: -MENU_GUTTER,
@@ -20,12 +30,17 @@ export default class MenuItem extends Lightning.Component {
         color: MENU_ITEM_TEXT_COLOR,
       },
       Label: {
-        text: { text: '', fontFace: 'Regular', fontSize: 50, color: MENU_ITEM_TEXT_COLOR },
+        text: { text: this.$label, fontFace: 'Regular', fontSize: 50, color: MENU_ITEM_TEXT_COLOR },
       },
     }
   }
 
+  _constructor() {
+    this._label = ''
+  }
+
   _init() {
+    this._visible = false
     this._slideLineAnimation = this.tag('SlideLine').animation({
       delay: 0.1,
       duration: 0.3,
@@ -33,11 +48,6 @@ export default class MenuItem extends Lightning.Component {
       stopMethod: 'immediate',
       actions: [{ p: 'w', v: { 0: 0, 1: MENU_WIDTH } }],
     })
-  }
-
-  set label(v) {
-    this._label = v
-    this.tag('Label').patch({ text: { text: v } })
   }
 
   set value(v) {
@@ -49,15 +59,13 @@ export default class MenuItem extends Lightning.Component {
   }
 
   _focus() {
-    this.signal('itemFocussed', this._val, this._label)
-    this.tag('SlideLine').patch({ visible: true })
-    this._slideLineAnimation.start()
+    this.signal('itemFocussed', this._val, this.label)
+    this._showSlideLine = true
   }
 
   _unfocus() {
-    this.signal('itemUnfocussed', this._val, this._label)
-    this.tag('SlideLine').patch({ visible: false })
-    this._slideLineAnimation.stop()
+    this.signal('itemUnfocussed', this._val, this.label)
+    this._showSlideLine = false
   }
 
   _handleUp() {
@@ -69,14 +77,14 @@ export default class MenuItem extends Lightning.Component {
   }
 
   _handleLeft() {
-    this.signal('leftSelect', this._val, this._label)
+    this.signal('leftSelect', this._val, this.label)
   }
 
   _handleRight() {
-    this.signal('rightSelect', this._val, this._label)
+    this.signal('rightSelect', this._val, this.label)
   }
 
   _handleEnter() {
-    this.signal('enterSelect', this._val, this._label)
+    this.signal('enterSelect', this._val, this.label)
   }
 }
