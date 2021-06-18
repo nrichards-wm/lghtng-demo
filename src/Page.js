@@ -92,14 +92,14 @@ export default class Page extends Lightning.Component {
 
   get _refs() {
     return {
-      [SelectableComponents.SIDE_MENU]: this.tag('SideMenu'),
-      [SelectableComponents.SUB_MENU]: this.tag('SubMenu'),
-      [SelectableComponents.CAROUSEL]: this.tag('Carousel'),
+      [SelectableComponents.SIDE_MENU]: () => this.tag('SideMenu'),
+      [SelectableComponents.SUB_MENU]: () => this.tag('SubMenu'),
+      [SelectableComponents.CAROUSEL]: () => this.tag('Carousel'),
     }
   }
 
   _getFocused() {
-    return this._refs[this._selectedComponent] ?? this
+    return this._refs[this._selectedComponent]() ?? this
   }
 
   _sideItemRightSelected() {
