@@ -14,6 +14,12 @@ const slidePaneTransition = {
   },
 }
 
+const SelectableComponents = {
+  SIDE_MENU: 'SideMenu',
+  SUB_MENU : 'SubMenu',
+  CAROUSEL : 'Carousel',
+}
+
 export default class Page extends Lightning.Component {
   static $subMenuItems = Page.bindProp('_subMenuItems')
   static $carouselItems = Page.bindProp('_carouselItems')
@@ -77,34 +83,27 @@ export default class Page extends Lightning.Component {
     this._subMenuItems = []
     this._carouselItems = []
     this._sideMenuActive = false
+    this._selectedComponent = SelectableComponents.SIDE_MENU
   }
 
   _init() {
-    this._setState('SideMenu')
+    this._selectedComponent = SelectableComponents.SIDE_MENU
   }
 
-  static _states() {
-    return [
-      class SideMenu extends this {
-        _getFocused() {
-          return this.tag('SideMenu')
-        }
-      },
-      class SubMenu extends this {
-        _getFocused() {
-          return this.tag('SubMenu')
-        }
-      },
-      class Carousel extends this {
-        _getFocused() {
-          return this.tag('Carousel')
-        }
-      },
-    ]
+  get _refs() {
+    return {
+      [SelectableComponents.SIDE_MENU]: this.tag('SideMenu'),
+      [SelectableComponents.SUB_MENU]: this.tag('SubMenu'),
+      [SelectableComponents.CAROUSEL]: this.tag('Carousel'),
+    }
+  }
+
+  _getFocused() {
+    return this._refs[this._selectedComponent] ?? this
   }
 
   _sideItemRightSelected() {
-    this._setState('SubMenu')
+    this._selectedComponent = SelectableComponents.SUB_MENU
   }
 
   _sideItemEnterSelected(value, label) {
@@ -122,11 +121,11 @@ export default class Page extends Lightning.Component {
 
 
   _subItemLeftSelected() {
-    this._setState('SideMenu')
+    this._selectedComponent = SelectableComponents.SIDE_MENU
   }
 
   _subItemRightSelected() {
-    this._setState('Carousel')
+    this._selectedComponent = SelectableComponents.CAROUSEL
   }
 
   _subItemEnterSelected(value, label) {
@@ -138,6 +137,6 @@ export default class Page extends Lightning.Component {
   }
 
   _deselectCarousel() {
-    this._setState('SubMenu')
+    this._selectedComponent = SelectableComponents.SUB_MENU
   }
 }
